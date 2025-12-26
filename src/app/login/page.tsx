@@ -1,52 +1,85 @@
 "use client";
 
 import { useDispatch } from "react-redux";
+import { loginSuccess } from "@/store/authSlice";
+import { decodeToken } from "@/utils/jwt";
 import { useRouter } from "next/navigation";
-import { login } from "@/store/authSlice";
+import { useState } from "react";
 
 /*
-Role-based login simulation
+JWT-based login form.
+Credentials are mocked for frontend assessment.
 */
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const handleLogin = (
-    role: "admin" | "projectManager" | "developer"
-  ) => {
-    dispatch(login(role));
+  const handleLogin = (role: "admin" | "projectManager" | "developer") => {
+    // Simulated backend-issued JWT
+    const token = btoa(
+      JSON.stringify({
+        email,
+        role,
+      })
+    );
+
+    const decoded = decodeToken(token);
+
+    dispatch(
+      loginSuccess({
+        token,
+        role: decoded.role,
+      })
+    );
+
     router.push("/dashboard");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 p-6">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow">
-        <h1 className="text-2xl font-bold mb-2">Login</h1>
-        <p className="text-slate-600 mb-6">
-          Choose a role to continue
-        </p>
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50">
+      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow">
+        <h1 className="mb-6 text-center text-xl font-semibold">
+          Login
+        </h1>
 
-        <div className="space-y-3">
+        <input
+          className="mb-3 w-full rounded border p-2"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          className="mb-4 w-full rounded border p-2"
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <div className="space-y-2">
           <button
             onClick={() => handleLogin("admin")}
-            className="w-full rounded-lg bg-slate-900 px-4 py-3 text-white hover:bg-slate-800"
+            className="w-full rounded bg-black py-2 text-white"
           >
-            Admin
+            Login as Admin
           </button>
 
           <button
             onClick={() => handleLogin("projectManager")}
-            className="w-full rounded-lg bg-indigo-600 px-4 py-3 text-white hover:bg-indigo-500"
+            className="w-full rounded bg-zinc-800 py-2 text-white"
           >
-            Project Manager
+            Login as Project Manager
           </button>
 
           <button
             onClick={() => handleLogin("developer")}
-            className="w-full rounded-lg border px-4 py-3 hover:bg-slate-50"
+            className="w-full rounded bg-zinc-700 py-2 text-white"
           >
-            Developer
+            Login as Developer
           </button>
         </div>
       </div>

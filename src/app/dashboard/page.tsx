@@ -5,6 +5,7 @@ import { getProjects, updateProject } from "@/services/projects";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import AdminAnalytics from "./analytics";
+import { canEditProjects } from "@/utils/roleGuard";
 
 /*
 Main dashboard displaying projects list
@@ -58,9 +59,10 @@ export default function DashboardPage() {
 
             {projects.map((project) => (
                 <div key={project.id} className="border p-4 mb-2">
-                    <input
+                    {/* <input
+                        disabled={!canEditProjects(role)}
                         defaultValue={project.name}
-                        disabled={!canEdit}
+                        // disabled={!canEdit}
                         className={`border px-2 py-1 rounded ${!canEdit ? "bg-slate-100 cursor-not-allowed" : ""
                             }`}
                         onBlur={(e) =>
@@ -70,12 +72,25 @@ export default function DashboardPage() {
                                 data: { name: e.target.value },
                             })
                         }
+                    /> */}
+
+                    <input
+                        disabled={!canEditProjects(role)}
+                        defaultValue={project.name}
+                        onBlur={(e) =>
+                            canEdit &&
+                            mutation.mutate({
+                                id: project.id,
+                                data: { name: e.target.value },
+                            })
+                        }
+                        className="disabled:cursor-not-allowed disabled:bg-zinc-100"
                     />
 
                 </div>
             ))}
+            <AdminAnalytics />
         </div>
     );
-    
+
 }
-<AdminAnalytics />

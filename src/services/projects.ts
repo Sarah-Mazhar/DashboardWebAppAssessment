@@ -1,27 +1,20 @@
 import { Project, ProjectStatus } from "@/types/project";
 import { fakeDelay } from "./api";
 
-let projects: Project[] = [
-  {
-    id: "1",
-    name: "ERP System",
-    status: "Active",
-    startDate: "2024-01-01",
-    endDate: "2024-12-31",
-    progress: 70,
-    budget: 50000,
-  },
-  {
-    id: "2",
-    name: "CRM Platform",
-    status: "Completed",
-    startDate: "2023-01-01",
-    endDate: "2023-10-01",
-    progress: 100,
-    budget: 30000,
-  },
-];
+const statuses: ProjectStatus[] = ["Active", "Completed", "On Hold"];
 
+/* ---------- Generate mock projects ---------- */
+let projects: Project[] = Array.from({ length: 25 }).map((_, i) => ({
+  id: String(i + 1),
+  name: `Project ${i + 1}`,
+  status: statuses[i % 3],
+  startDate: `2024-01-${String((i % 28) + 1).padStart(2, "0")}`,
+  endDate: `2024-12-${String((i % 28) + 1).padStart(2, "0")}`,
+  progress: Math.floor(Math.random() * 100),
+  budget: 10000 + i * 2500,
+}));
+
+/* ---------- Types ---------- */
 export interface ProjectsQuery {
   search?: string;
   status?: ProjectStatus;
@@ -29,11 +22,25 @@ export interface ProjectsQuery {
   limit?: number;
 }
 
+/* ---------- Fetch Projects ---------- */
+
+export const getProjectById = async (id: string): Promise<Project> => {
+  await fakeDelay();
+
+  const project = projects.find((p) => p.id === id);
+
+  if (!project) {
+    throw new Error("Project not found");
+  }
+
+  return project;
+};
+
 export const getProjects = async ({
   search = "",
   status,
   page = 1,
-  limit = 5,
+  limit = 10, // ✅ 10 per page
 }: ProjectsQuery) => {
   await fakeDelay();
 
@@ -57,6 +64,8 @@ export const getProjects = async ({
     total: filtered.length,
   };
 };
+
+/* ---------- Update Project ---------- */
 export type UpdateProjectVariables = {
   id: string;
   data: Partial<Project>;
@@ -66,11 +75,9 @@ export async function updateProject({
   id,
   data,
 }: UpdateProjectVariables): Promise<void> {
-  // mock delay
-  await new Promise((res) => setTimeout(res, 300));
+  await fakeDelay();
 
-  console.log("Updating project", id, data);
-
-  // REAL API EXAMPLE:
-  // await axios.patch(`/api/projects/${id}`, data);
+  projects = projects.map((p) =>
+    p.id === id ? { ...p, ...data } : p
+  );
 }

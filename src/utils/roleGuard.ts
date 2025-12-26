@@ -11,3 +11,7 @@ export const canEditProjects = (role: UserRole | null) => {
 export const canViewAnalytics = (role: UserRole | null) => {
   return role === "admin";
 };
+
+export const canEditTasks = (role: UserRole | null) => {
+  return role === "admin" || role === "projectManager";
+};

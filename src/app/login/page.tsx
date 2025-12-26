@@ -2,36 +2,28 @@
 
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/store/authSlice";
-import { decodeToken } from "@/utils/jwt";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-/*
-JWT-based login form.
-Credentials are mocked for frontend assessment.
-*/
+import { generateMockToken } from "@/utils/jwt";
+import { UserRole } from "@/types/auth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const handleLogin = (role: "admin" | "projectManager" | "developer") => {
-    // Simulated backend-issued JWT
-    const token = btoa(
-      JSON.stringify({
-        email,
-        role,
-      })
-    );
-
-    const decoded = decodeToken(token);
+  const handleLogin = (role: UserRole) => {
+    const token = generateMockToken({
+      role,
+      email: email || "test@example.com",
+    });
 
     dispatch(
       loginSuccess({
         token,
-        role: decoded.role,
+        role,
       })
     );
 

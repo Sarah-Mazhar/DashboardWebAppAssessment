@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProjects, updateProject } from "@/services/projects";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-
+import AdminAnalytics from "./analytics";
 
 /*
 Main dashboard displaying projects list
@@ -18,16 +18,30 @@ export default function DashboardPage() {
         queryKey: ["projects"],
         queryFn: getProjects,
     });
-
     const mutation = useMutation({
         mutationFn: updateProject,
-        onMutate: async () => {
+        onMutate: async (variables) => {
             await queryClient.cancelQueries({ queryKey: ["projects"] });
+
+            const previousProjects =
+                queryClient.getQueryData<any[]>(["projects"]);
+
+            queryClient.setQueryData<any[]>(["projects"], (old) =>
+                old?.map((p) =>
+                    p.id === variables.id ? { ...p, ...variables.data } : p
+                )
+            );
+
+            return { previousProjects };
         },
-        onSuccess: () => {
+        onError: (_err, _vars, context) => {
+            queryClient.setQueryData(["projects"], context?.previousProjects);
+        },
+        onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["projects"] });
         },
     });
+
 
 
     const role = useSelector((state: RootState) => state.auth.role);
@@ -62,4 +76,6 @@ export default function DashboardPage() {
             ))}
         </div>
     );
+    
 }
+<AdminAnalytics />

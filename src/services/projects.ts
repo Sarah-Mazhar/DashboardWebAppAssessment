@@ -1,19 +1,5 @@
+import { Project, ProjectStatus } from "@/types/project";
 import { fakeDelay } from "./api";
-
-/*
-Mock projects dataset
-Acts as an in-memory database
-*/
-
-export type Project = {
-  id: string;
-  name: string;
-  status: string;
-  startDate: string;
-  endDate: string;
-  progress: number;
-  budget: number;
-};
 
 let projects: Project[] = [
   {
@@ -25,21 +11,66 @@ let projects: Project[] = [
     progress: 70,
     budget: 50000,
   },
+  {
+    id: "2",
+    name: "CRM Platform",
+    status: "Completed",
+    startDate: "2023-01-01",
+    endDate: "2023-10-01",
+    progress: 100,
+    budget: 30000,
+  },
 ];
 
-export const getProjects = async (): Promise<Project[]> => {
-  await fakeDelay();
-  return projects;
-};
+export interface ProjectsQuery {
+  search?: string;
+  status?: ProjectStatus;
+  page?: number;
+  limit?: number;
+}
 
-export const updateProject = async ({
-  id,
-  data,
-}: {
+export const getProjects = async ({
+  search = "",
+  status,
+  page = 1,
+  limit = 5,
+}: ProjectsQuery) => {
+  await fakeDelay();
+
+  let filtered = [...projects];
+
+  if (search) {
+    filtered = filtered.filter((p) =>
+      p.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }
+
+  if (status) {
+    filtered = filtered.filter((p) => p.status === status);
+  }
+
+  const start = (page - 1) * limit;
+  const end = start + limit;
+
+  return {
+    data: filtered.slice(start, end),
+    total: filtered.length,
+  };
+};
+export type UpdateProjectVariables = {
   id: string;
   data: Partial<Project>;
-}): Promise<Project[]> => {
-  await fakeDelay();
-  projects = projects.map((p) => (p.id === id ? { ...p, ...data } : p));
-  return projects;
 };
+
+export async function updateProject({
+  id,
+  data,
+}: UpdateProjectVariables): Promise<void> {
+  // mock delay
+  await new Promise((res) => setTimeout(res, 300));
+
+  console.log("Updating project", id, data);
+
+  // REAL API EXAMPLE:
+  // await axios.patch(`/api/projects/${id}`, data);
+}

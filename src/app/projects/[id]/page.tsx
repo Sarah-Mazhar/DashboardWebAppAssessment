@@ -97,7 +97,10 @@ export default function ProjectDetailsPage({
     );
   });
 
-  return () => realtimeChannel.close();
+  // return () => realtimeChannel.close();
+  return () => {
+  // no-op (do not close shared channel)
+};
 }, [id, queryClient]);
 
   const { data: project, isLoading: projectLoading } = useQuery({

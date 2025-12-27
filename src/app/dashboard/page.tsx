@@ -16,6 +16,7 @@ import AdminAnalytics from "./analytics";
 import { Project, ProjectStatus } from "@/types/project";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { useRouter } from "next/navigation";
+import DashboardSkeleton from "./skeletons/DashboardSkeleton";
 
 /* ================= TYPES ================= */
 
@@ -145,13 +146,18 @@ export default function DashboardPage() {
         </span>
     );
 
+    // if (isLoading) {
+    //     return (
+    //         <div className="flex h-screen items-center justify-center">
+    //             Loading dashboard...
+    //         </div>
+    //     );
+    // }
+
     if (isLoading) {
-        return (
-            <div className="flex h-screen items-center justify-center">
-                Loading dashboard...
-            </div>
-        );
-    }
+  return <DashboardSkeleton />;
+}
+
 
     return (
         <div className="min-h-screen p-8">

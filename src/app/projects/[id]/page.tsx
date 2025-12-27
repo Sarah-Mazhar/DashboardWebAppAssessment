@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect } from "react";
 import { useState } from "react";
 import {
   useQuery,
@@ -25,6 +25,9 @@ import { Task, TaskPriority, TaskStatus } from "@/types/task";
 
 import TaskList from "./components/TaskList";
 import AddTaskForm from "./components/AddTaskForm";
+import { realtimeChannel } from "@/lib/realtime";
+
+
 
 /* ================= STYLES ================= */
 
@@ -53,6 +56,40 @@ export default function ProjectDetailsPage({
 
   /* ---------- React Query ---------- */
   const queryClient = useQueryClient();
+  useEffect(() => {
+  realtimeChannel.subscribe((event) => {
+    queryClient.setQueryData(
+      ["tasks", id],
+      (old: Task[] | undefined) => {
+        if (!old) return old;
+
+        switch (event.type) {
+          case "TASK_ADDED":
+            return [...old, event.payload];
+
+          case "TASK_UPDATED":
+            return old.map((t) =>
+              t.id === event.payload.id
+                ? { ...t, ...event.payload.data }
+                : t
+            );
+
+          case "TASK_BULK_UPDATED":
+            return old.map((t) =>
+              event.payload.ids.includes(t.id)
+                ? { ...t, ...event.payload.data }
+                : t
+            );
+
+          default:
+            return old;
+        }
+      }
+    );
+  });
+
+  return () => realtimeChannel.close();
+}, [id, queryClient]);
 
   const { data: project, isLoading: projectLoading } = useQuery({
     queryKey: ["project", id],

@@ -27,6 +27,9 @@ import TaskList from "./components/TaskList";
 import AddTaskForm from "./components/AddTaskForm";
 import { realtimeChannel } from "@/lib/realtime";
 import TaskFilters from "./components/TaskFilters";
+import { TaskSkeleton } from '../[id]/components/skeletons/TaskSkeleton';
+import { ProjectSkeleton } from "../[id]/components/skeletons/ProjectSkeleton";
+
 
 
 
@@ -223,9 +226,27 @@ export default function ProjectDetailsPage({
   };
 
   /* ---------- Loading ---------- */
-  if (projectLoading || tasksLoading || !project) {
-    return <div className="p-6">Loading project...</div>;
-  }
+  // if (projectLoading || tasksLoading || !project) {
+  //   return <div className="p-6">Loading project...</div>;
+  // }
+  /* ---------- Loading ---------- */
+if (projectLoading) {
+  return (
+    <div className="p-8">
+      <ProjectSkeleton />
+    </div>
+  );
+}
+
+if (!project) {
+  return (
+    <div className="p-8 text-center text-red-600">
+      Failed to load project.
+    </div>
+  );
+}
+
+
 
   /* ================= UI ================= */
 
@@ -243,7 +264,8 @@ export default function ProjectDetailsPage({
           </span>
         </div>
 
-        <div className="mt-6 grid grid-cols-4 gap-6">
+        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
           <div>
             <p className="text-sm text-zinc-500">Progress</p>
             <div className="mt-2 h-2 w-full rounded-full bg-zinc-200">
@@ -297,16 +319,24 @@ export default function ProjectDetailsPage({
           </div>
         )}
 
-        <div className="mt-6">
-         <TaskList
-  tasks={filteredTasks}
-  selected={selected}
-  onToggle={toggleTask}
-  onEdit={editTask}
-  canEdit={canEdit}
-/>
+       <div className="mt-6">
+  {tasksLoading ? (
+    <TaskSkeleton />
+  ) : filteredTasks.length === 0 ? (
+    <div className="rounded-xl border border-dashed p-8 text-center text-zinc-500">
+      No tasks match your filters.
+    </div>
+  ) : (
+    <TaskList
+      tasks={filteredTasks}
+      selected={selected}
+      onToggle={toggleTask}
+      onEdit={editTask}
+      canEdit={canEdit}
+    />
+  )}
+</div>
 
-        </div>
       </div>
     </div>
   );

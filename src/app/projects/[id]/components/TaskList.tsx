@@ -20,15 +20,23 @@ export default function TaskList({
       {tasks.map((task) => (
         <div
           key={task.id}
-          className="flex items-center justify-between rounded-xl border bg-white p-4"
-        >
+          className="flex flex-col gap-4 rounded-xl border bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+
+
           {/* LEFT */}
           <div className="flex items-start gap-3">
-            <input
+            {/* <input
               type="checkbox"
               checked={selected.includes(task.id)}
               onChange={() => onToggle(task.id)}
+            /> */}
+            <input
+              type="checkbox"
+              aria-label={`Select task ${task.title}`}
+              checked={selected.includes(task.id)}
+              onChange={() => onToggle(task.id)}
             />
+
 
             <div>
               {/* 🔹 Title */}
@@ -45,7 +53,8 @@ export default function TaskList({
           </div>
 
           {/* RIGHT */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+
             {/* Priority */}
             <select
               disabled={!canEdit}

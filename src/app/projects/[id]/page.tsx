@@ -251,10 +251,10 @@ if (!project) {
   /* ================= UI ================= */
 
   return (
-    <div className="min-h-screen space-y-8 p-8">
+ <div className="min-h-screen space-y-6 p-4 sm:p-6 lg:p-8">
       {/* ================= PROJECT SUMMARY ================= */}
       <div className="rounded-2xl bg-white p-6 shadow">
-        <div className="flex items-center justify-between">
+<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-3xl font-bold">{project.name}</h1>
 
           <span

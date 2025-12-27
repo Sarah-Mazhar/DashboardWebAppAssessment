@@ -14,7 +14,8 @@ export default function HomePage() {
           <h1 className="text-4xl font-bold tracking-tight text-slate-900">
             Project Dashboard
           </h1>
-          <p className="mt-4 text-lg text-slate-600">
+        <p className="mt-4 text-base sm:text-lg text-slate-600">
+
             React & Next.js assessment showcasing authentication, dashboards,
             real-time updates, and modern UI patterns.
           </p>

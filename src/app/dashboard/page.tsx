@@ -160,7 +160,8 @@ export default function DashboardPage() {
 
 
     return (
-        <div className="min-h-screen p-8">
+        <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+
             {/* Header */}
             <div className="mb-8">
                 <h1 className="text-4xl font-bold">Projects Dashboard</h1>
@@ -180,7 +181,8 @@ export default function DashboardPage() {
             </div>
 
             {/* ===== Column Headers ===== */}
-            <div className="sticky top-0 z-10 mb-2 rounded-2xl bg-white/80 px-5 py-3 backdrop-blur">
+         <div className="sticky top-0 z-10 mb-2 hidden rounded-2xl bg-white/80 px-5 py-3 backdrop-blur md:block">
+
                 <div className="grid grid-cols-6 items-center gap-4 text-xs font-semibold uppercase tracking-wide text-zinc-500">
                     <button
                         onClick={() => handleHeaderSort("name")}
@@ -223,7 +225,8 @@ export default function DashboardPage() {
                         className="cursor-pointer rounded-2xl bg-white p-5 shadow transition hover:scale-[1.01] hover:bg-zinc-50"
                     >
 
-                        <div className="grid grid-cols-6 items-center gap-4">
+                       <div className="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-center">
+
                             <input
                                 onClick={(e) => e.stopPropagation()}
                                 defaultValue={project.name}
@@ -234,7 +237,7 @@ export default function DashboardPage() {
                                         data: { name: e.target.value },
                                     })
                                 }
-                                className="col-span-2 rounded-lg border px-3 py-2 font-semibold disabled:bg-zinc-100"
+                                className="md:col-span-2 w-full rounded-lg border px-3 py-2 font-semibold disabled:bg-zinc-100"
                             />
 
                             <select
@@ -287,7 +290,8 @@ export default function DashboardPage() {
                                 <div className="mt-1 text-xs">{project.progress}%</div>
                             </div>
 
-                            <div className="text-right font-bold">
+                          <div className="font-bold md:text-right">
+
                                 ${project.budget.toLocaleString()}
                             </div>
                         </div>
@@ -296,7 +300,8 @@ export default function DashboardPage() {
             </div>
 
             {/* Pagination */}
-            <div className="mt-6 flex justify-center gap-4">
+           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+
                 <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     className="rounded-full bg-black/10 px-6 py-2 hover:bg-black/20"

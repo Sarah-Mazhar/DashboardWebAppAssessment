@@ -26,6 +26,7 @@ import { Task, TaskPriority, TaskStatus } from "@/types/task";
 import TaskList from "./components/TaskList";
 import AddTaskForm from "./components/AddTaskForm";
 import { realtimeChannel } from "@/lib/realtime";
+import TaskFilters from "./components/TaskFilters";
 
 
 
@@ -53,6 +54,14 @@ export default function ProjectDetailsPage({
 
   /* ---------- State ---------- */
   const [selected, setSelected] = useState<string[]>([]);
+
+  const [filters, setFilters] = useState({
+  search: "",
+  status: "All" as TaskStatus | "All",
+  priority: "All" as TaskPriority | "All",
+  assignedTo: "",
+});
+
 
   /* ---------- React Query ---------- */
   const queryClient = useQueryClient();
@@ -103,6 +112,31 @@ export default function ProjectDetailsPage({
     queryKey: ["tasks", id],
     queryFn: () => getTasksByProject(id),
   });
+
+  const filteredTasks = tasks.filter((task) => {
+  const matchesSearch =
+    task.title.toLowerCase().includes(filters.search.toLowerCase());
+
+  const matchesStatus =
+    filters.status === "All" || task.status === filters.status;
+
+  const matchesPriority =
+    filters.priority === "All" ||
+    task.priority === filters.priority;
+
+  const matchesAssigned =
+    task.assignedTo
+      .toLowerCase()
+      .includes(filters.assignedTo.toLowerCase());
+
+  return (
+    matchesSearch &&
+    matchesStatus &&
+    matchesPriority &&
+    matchesAssigned
+  );
+});
+
 
   /* ---------- Mutations ---------- */
 
@@ -241,6 +275,9 @@ export default function ProjectDetailsPage({
       <div>
         <h2 className="mb-4 text-2xl font-semibold">Tasks</h2>
 
+        <TaskFilters filters={filters} onChange={setFilters} />
+
+
         {canEdit && <AddTaskForm onAdd={addTask} />}
 
         {canEdit && selected.length > 0 && (
@@ -258,13 +295,14 @@ export default function ProjectDetailsPage({
         )}
 
         <div className="mt-6">
-          <TaskList
-            tasks={tasks}
-            selected={selected}
-            onToggle={toggleTask}
-            onEdit={editTask}
-            canEdit={canEdit}
-          />
+         <TaskList
+  tasks={filteredTasks}
+  selected={selected}
+  onToggle={toggleTask}
+  onEdit={editTask}
+  canEdit={canEdit}
+/>
+
         </div>
       </div>
     </div>

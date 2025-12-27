@@ -1,51 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  addTaskSchema,
+  AddTaskFormValues,
+} from "@/validation/taskSchema";
 import { TaskPriority, TaskStatus } from "@/types/task";
-
-type AddTaskPayload = {
-  title: string;
-  priority: TaskPriority;
-  status: TaskStatus;
-  assignedTo: string;
-};
+import { useState } from "react";
 
 export default function AddTaskForm({
   onAdd,
 }: {
-  onAdd: (task: AddTaskPayload) => void;
+  onAdd: (task: AddTaskFormValues) => void;
 }) {
   const [open, setOpen] = useState(false);
 
-  const [title, setTitle] = useState("");
-  const [priority, setPriority] = useState<TaskPriority>("Medium");
-  const [status, setStatus] = useState<TaskStatus>("Todo");
-  const [assignedTo, setAssignedTo] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<AddTaskFormValues>({
+    resolver: zodResolver(addTaskSchema),
+    defaultValues: {
+      priority: "Medium",
+      status: "Todo",
+    },
+  });
 
-  const reset = () => {
-    setTitle("");
-    setPriority("Medium");
-    setStatus("Todo");
-    setAssignedTo("");
-  };
-
-  const submit = () => {
-    if (!title || !assignedTo) return;
-
-    onAdd({
-      title,
-      priority,
-      status,
-      assignedTo,
-    });
-
+  const submit = (data: AddTaskFormValues) => {
+    onAdd(data);
     reset();
     setOpen(false);
   };
 
   return (
     <>
-      {/* ➕ Trigger Button */}
       <button
         onClick={() => setOpen(true)}
         className="mb-4 rounded-lg bg-indigo-600 px-4 py-2 text-white"
@@ -53,49 +44,58 @@ export default function AddTaskForm({
         Add Task
       </button>
 
-      {/* 🪟 Modal */}
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          role="dialog"
+          aria-modal="true"
+        >
+          <form
+            onSubmit={handleSubmit(submit)}
+            className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg"
+          >
             <h3 className="mb-4 text-xl font-semibold">Add New Task</h3>
 
             <div className="space-y-4">
               {/* Title */}
               <div>
-                <label className="mb-1 block text-sm font-medium">
+                <label className="block text-sm font-medium">
                   Title *
                 </label>
                 <input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  {...register("title")}
                   className="w-full rounded-lg border px-3 py-2"
-                  placeholder="Task title"
                 />
+                {errors.title && (
+                  <p className="text-sm text-red-600">
+                    {errors.title.message}
+                  </p>
+                )}
               </div>
 
               {/* Assigned To */}
               <div>
-                <label className="mb-1 block text-sm font-medium">
+                <label className="block text-sm font-medium">
                   Assigned To *
                 </label>
                 <input
-                  value={assignedTo}
-                  onChange={(e) => setAssignedTo(e.target.value)}
+                  {...register("assignedTo")}
                   className="w-full rounded-lg border px-3 py-2"
-                  placeholder="Team member"
                 />
+                {errors.assignedTo && (
+                  <p className="text-sm text-red-600">
+                    {errors.assignedTo.message}
+                  </p>
+                )}
               </div>
 
               {/* Priority */}
               <div>
-                <label className="mb-1 block text-sm font-medium">
+                <label className="block text-sm font-medium">
                   Priority *
                 </label>
                 <select
-                  value={priority}
-                  onChange={(e) =>
-                    setPriority(e.target.value as TaskPriority)
-                  }
+                  {...register("priority")}
                   className="w-full rounded-lg border px-3 py-2"
                 >
                   <option value="Low">Low</option>
@@ -106,14 +106,11 @@ export default function AddTaskForm({
 
               {/* Status */}
               <div>
-                <label className="mb-1 block text-sm font-medium">
+                <label className="block text-sm font-medium">
                   Status *
                 </label>
                 <select
-                  value={status}
-                  onChange={(e) =>
-                    setStatus(e.target.value as TaskStatus)
-                  }
+                  {...register("status")}
                   className="w-full rounded-lg border px-3 py-2"
                 >
                   <option value="Todo">Todo</option>
@@ -123,9 +120,9 @@ export default function AddTaskForm({
               </div>
             </div>
 
-            {/* Actions */}
             <div className="mt-6 flex justify-end gap-3">
               <button
+                type="button"
                 onClick={() => {
                   reset();
                   setOpen(false);
@@ -136,14 +133,14 @@ export default function AddTaskForm({
               </button>
 
               <button
-                onClick={submit}
-                disabled={!title || !assignedTo}
+                type="submit"
+                disabled={isSubmitting}
                 className="rounded-lg bg-indigo-600 px-4 py-2 text-white disabled:opacity-50"
               >
                 Add Task
               </button>
             </div>
-          </div>
+          </form>
         </div>
       )}
     </>

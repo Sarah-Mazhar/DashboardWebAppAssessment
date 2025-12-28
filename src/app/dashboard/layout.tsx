@@ -21,7 +21,7 @@ export default function DashboardLayout({
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push("/login");
+      router.push("/");
     }
   }, [isAuthenticated, router]);
 

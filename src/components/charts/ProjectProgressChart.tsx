@@ -1,18 +1,40 @@
 "use client";
 
-import { LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { Project } from "@/types/project";
 
-/*
-Visualizes project progress over time
-*/
+export default function ProjectProgressChart({
+  projects,
+}: {
+  projects: Project[];
+}) {
+  const chartData = projects.map((p) => ({
+    name: p.name,
+    progress: p.progress,
+  }));
 
-export default function ProjectProgressChart({ data }: any) {
   return (
-    <LineChart width={400} height={200} data={data}>
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip />
-      <Line dataKey="progress" />
-    </LineChart>
+    <div className="h-64 w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={chartData}>
+          <XAxis dataKey="name" hide />
+          <YAxis domain={[0, 100]} />
+          <Tooltip />
+          <Line
+            type="monotone"
+            dataKey="progress"
+            strokeWidth={2}
+            dot={false}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

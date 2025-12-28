@@ -40,7 +40,7 @@ export const getProjects = async ({
   search = "",
   status,
   page = 1,
-  limit = 10, // ✅ 10 per page
+  limit = 10, // 10 per page
 }: ProjectsQuery) => {
   await fakeDelay();
 

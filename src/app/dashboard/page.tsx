@@ -10,13 +10,14 @@ import {
 import { getProjects, updateProject } from "@/services/projects";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { canEditProjects } from "@/utils/roleGuard";
+import { canEditProjects, canViewAnalytics } from "@/utils/roleGuard";
 import Filters from "./Filters";
 import AdminAnalytics from "./analytics";
 import { Project, ProjectStatus } from "@/types/project";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import DashboardSkeleton from "./skeletons/DashboardSkeleton";
+import ProjectProgressChart from "@/components/charts/ProjectProgressChart";
 
 /* ================= TYPES ================= */
 
@@ -230,6 +231,27 @@ export default function DashboardPage() {
                     </button>
                 </div>
             </div>
+
+
+{/* ===== Analytics ===== */}
+
+{canViewAnalytics(role) && (
+  <ProjectProgressChart projects={sortedProjects} />
+)}
+
+<section
+  aria-labelledby="progress-chart-title"
+  className="mb-8 rounded-2xl bg-white p-6 shadow"
+>
+  <h2
+    id="progress-chart-title"
+    className="mb-4 text-xl font-semibold"
+  >
+    Project Progress Overview
+  </h2>
+
+  <ProjectProgressChart projects={sortedProjects} />
+</section>
 
             {/* ===== Project Cards ===== */}
             <div className="space-y-4">

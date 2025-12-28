@@ -155,16 +155,24 @@ export default function DashboardPage() {
     // }
 
     if (isLoading) {
-  return <DashboardSkeleton />;
-}
+        return <div aria-busy="true" aria-live="polite">
+            <DashboardSkeleton />
+        </div>;
+    }
 
 
     return (
-        <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+        <main
+            role="main"
+            aria-labelledby="dashboard-title"
+            className="min-h-screen p-4 sm:p-6 lg:p-8"
+        >
+
 
             {/* Header */}
             <div className="mb-8">
-                <h1 className="text-4xl font-bold">Projects Dashboard</h1>
+                <h1 id="dashboard-title" className="text-3xl sm:text-4xl font-bold">
+                    Projects Dashboard</h1>
                 <p className="pt-4 opacity-70">
                     Manage, track and update all projects in one place
                 </p>
@@ -181,11 +189,18 @@ export default function DashboardPage() {
             </div>
 
             {/* ===== Column Headers ===== */}
-         <div className="sticky top-0 z-10 mb-2 hidden rounded-2xl bg-white/80 px-5 py-3 backdrop-blur md:block">
+            <div className="sticky top-0 z-10 mb-2 hidden rounded-2xl bg-white/80 px-5 py-3 backdrop-blur md:block">
 
                 <div className="grid grid-cols-6 items-center gap-4 text-xs font-semibold uppercase tracking-wide text-zinc-500">
                     <button
                         onClick={() => handleHeaderSort("name")}
+                        aria-sort={
+                            sortBy === "name"
+                                ? sortOrder === "asc"
+                                    ? "ascending"
+                                    : "descending"
+                                : "none"
+                        }
                         className="col-span-2 flex items-center gap-2 hover:text-black"
                     >
                         Name <SortIcon column="name" />
@@ -222,13 +237,14 @@ export default function DashboardPage() {
                     <div
                         key={project.id}
                         onClick={() => router.push(`/projects/${project.id}`)}
-                        className="cursor-pointer rounded-2xl bg-white p-5 shadow transition hover:scale-[1.01] hover:bg-zinc-50"
+                        className="w-full text-left cursor-pointer rounded-2xl bg-white p-5 shadow transition hover:scale-[1.01] hover:bg-zinc-50"
                     >
 
-                       <div className="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-center">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-center">
 
                             <input
                                 onClick={(e) => e.stopPropagation()}
+                                aria-label={`Project name for ${project.name}`}
                                 defaultValue={project.name}
                                 disabled={!canEdit}
                                 onBlur={(e) =>
@@ -242,6 +258,7 @@ export default function DashboardPage() {
 
                             <select
                                 onClick={(e) => e.stopPropagation()}
+                                aria-label={`Project status for ${project.status}`}
                                 defaultValue={project.status}
                                 disabled={!canEdit}
                                 onChange={(e) =>
@@ -290,7 +307,7 @@ export default function DashboardPage() {
                                 <div className="mt-1 text-xs">{project.progress}%</div>
                             </div>
 
-                          <div className="font-bold md:text-right">
+                            <div className="font-bold md:text-right">
 
                                 ${project.budget.toLocaleString()}
                             </div>
@@ -300,7 +317,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Pagination */}
-           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
 
                 <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -318,6 +335,6 @@ export default function DashboardPage() {
             </div>
 
             <AdminAnalytics />
-        </div>
+        </main>
     );
 }

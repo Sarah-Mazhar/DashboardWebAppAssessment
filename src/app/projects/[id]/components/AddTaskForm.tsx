@@ -54,36 +54,43 @@ export default function AddTaskForm({
             onSubmit={handleSubmit(submit)}
             className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg"
           >
-            <h3 className="mb-4 text-xl font-semibold">Add New Task</h3>
+            <h3 id="add-task-title" className="mb-4 text-xl font-semibold">Add New Task</h3>
 
             <div className="space-y-4">
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium">
+                <label htmlFor="title" className="block text-sm font-medium">
                   Title *
                 </label>
                 <input
+                  id="title"
                   {...register("title")}
+                  aria-required="true"
                   className="w-full rounded-lg border px-3 py-2"
                 />
+
                 {errors.title && (
-                  <p className="text-sm text-red-600">
+                  <p role="alert" className="text-sm text-red-600">
                     {errors.title.message}
                   </p>
+
                 )}
               </div>
 
               {/* Assigned To */}
               <div>
-                <label className="block text-sm font-medium">
+                <label htmlFor="assignedTo" className="block text-sm font-medium">
                   Assigned To *
                 </label>
                 <input
+                  id="assignedTo"
                   {...register("assignedTo")}
+                  aria-required="true"
                   className="w-full rounded-lg border px-3 py-2"
                 />
+
                 {errors.assignedTo && (
-                  <p className="text-sm text-red-600">
+                  <p role="alert" className="text-sm text-red-600">
                     {errors.assignedTo.message}
                   </p>
                 )}
@@ -96,6 +103,7 @@ export default function AddTaskForm({
                 </label>
                 <select
                   {...register("priority")}
+                  aria-required="true"
                   className="w-full rounded-lg border px-3 py-2"
                 >
                   <option value="Low">Low</option>

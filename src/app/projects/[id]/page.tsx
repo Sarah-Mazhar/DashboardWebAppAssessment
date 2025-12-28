@@ -59,52 +59,52 @@ export default function ProjectDetailsPage({
   const [selected, setSelected] = useState<string[]>([]);
 
   const [filters, setFilters] = useState({
-  search: "",
-  status: "All" as TaskStatus | "All",
-  priority: "All" as TaskPriority | "All",
-  assignedTo: "",
-});
+    search: "",
+    status: "All" as TaskStatus | "All",
+    priority: "All" as TaskPriority | "All",
+    assignedTo: "",
+  });
 
 
   /* ---------- React Query ---------- */
   const queryClient = useQueryClient();
   useEffect(() => {
-  realtimeChannel.subscribe((event) => {
-    queryClient.setQueryData(
-      ["tasks", id],
-      (old: Task[] | undefined) => {
-        if (!old) return old;
+    realtimeChannel.subscribe((event) => {
+      queryClient.setQueryData(
+        ["tasks", id],
+        (old: Task[] | undefined) => {
+          if (!old) return old;
 
-        switch (event.type) {
-          case "TASK_ADDED":
-            return [...old, event.payload];
+          switch (event.type) {
+            case "TASK_ADDED":
+              return [...old, event.payload];
 
-          case "TASK_UPDATED":
-            return old.map((t) =>
-              t.id === event.payload.id
-                ? { ...t, ...event.payload.data }
-                : t
-            );
+            case "TASK_UPDATED":
+              return old.map((t) =>
+                t.id === event.payload.id
+                  ? { ...t, ...event.payload.data }
+                  : t
+              );
 
-          case "TASK_BULK_UPDATED":
-            return old.map((t) =>
-              event.payload.ids.includes(t.id)
-                ? { ...t, ...event.payload.data }
-                : t
-            );
+            case "TASK_BULK_UPDATED":
+              return old.map((t) =>
+                event.payload.ids.includes(t.id)
+                  ? { ...t, ...event.payload.data }
+                  : t
+              );
 
-          default:
-            return old;
+            default:
+              return old;
+          }
         }
-      }
-    );
-  });
+      );
+    });
 
-  // return () => realtimeChannel.close();
-  return () => {
-  // no-op (do not close shared channel)
-};
-}, [id, queryClient]);
+    // return () => realtimeChannel.close();
+    return () => {
+      // no-op (do not close shared channel)
+    };
+  }, [id, queryClient]);
 
   const { data: project, isLoading: projectLoading } = useQuery({
     queryKey: ["project", id],
@@ -120,28 +120,28 @@ export default function ProjectDetailsPage({
   });
 
   const filteredTasks = tasks.filter((task) => {
-  const matchesSearch =
-    task.title.toLowerCase().includes(filters.search.toLowerCase());
+    const matchesSearch =
+      task.title.toLowerCase().includes(filters.search.toLowerCase());
 
-  const matchesStatus =
-    filters.status === "All" || task.status === filters.status;
+    const matchesStatus =
+      filters.status === "All" || task.status === filters.status;
 
-  const matchesPriority =
-    filters.priority === "All" ||
-    task.priority === filters.priority;
+    const matchesPriority =
+      filters.priority === "All" ||
+      task.priority === filters.priority;
 
-  const matchesAssigned =
-    task.assignedTo
-      .toLowerCase()
-      .includes(filters.assignedTo.toLowerCase());
+    const matchesAssigned =
+      task.assignedTo
+        .toLowerCase()
+        .includes(filters.assignedTo.toLowerCase());
 
-  return (
-    matchesSearch &&
-    matchesStatus &&
-    matchesPriority &&
-    matchesAssigned
-  );
-});
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesPriority &&
+      matchesAssigned
+    );
+  });
 
 
   /* ---------- Mutations ---------- */
@@ -163,8 +163,8 @@ export default function ProjectDetailsPage({
       queryClient.setQueryData<Task[]>(["tasks", id], (old) =>
         old
           ? old.map((t) =>
-              ids.includes(t.id) ? { ...t, ...data } : t
-            )
+            ids.includes(t.id) ? { ...t, ...data } : t
+          )
           : old
       );
 
@@ -197,18 +197,18 @@ export default function ProjectDetailsPage({
   };
 
   const addTask = (task: {
-  title: string;
-  priority: TaskPriority;
-  status: TaskStatus;
-  assignedTo: string;
-}) => {
-  addTaskApi({
-    projectId: id,
-    ...task,
-  }).then(() =>
-    queryClient.invalidateQueries({ queryKey: ["tasks", id] })
-  );
-};
+    title: string;
+    priority: TaskPriority;
+    status: TaskStatus;
+    assignedTo: string;
+  }) => {
+    addTaskApi({
+      projectId: id,
+      ...task,
+    }).then(() =>
+      queryClient.invalidateQueries({ queryKey: ["tasks", id] })
+    );
+  };
 
 
   const editTask = (taskId: string, data: Partial<Task>) => {
@@ -230,34 +230,41 @@ export default function ProjectDetailsPage({
   //   return <div className="p-6">Loading project...</div>;
   // }
   /* ---------- Loading ---------- */
-if (projectLoading) {
-  return (
-    <div className="p-8">
-      <ProjectSkeleton />
-    </div>
-  );
-}
+  if (projectLoading) {
+    return (
+      <div className="p-8">
+        <ProjectSkeleton />
+      </div>
+    );
+  }
 
-if (!project) {
-  return (
-    <div className="p-8 text-center text-red-600">
-      Failed to load project.
-    </div>
-  );
-}
+  if (!project) {
+    return (
+      <div className="p-8 text-center text-red-600">
+        Failed to load project.
+      </div>
+    );
+  }
 
 
 
   /* ================= UI ================= */
 
   return (
- <div className="min-h-screen space-y-6 p-4 sm:p-6 lg:p-8">
+    <main
+      role="main"
+      aria-labelledby="project-title"
+      className="min-h-screen space-y-6 p-4 sm:p-6 lg:p-8"
+    >
+
       {/* ================= PROJECT SUMMARY ================= */}
       <div className="rounded-2xl bg-white p-6 shadow">
-<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-3xl font-bold">{project.name}</h1>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <h1 id="project-title" className="text-3xl font-bold">{project.name}</h1>
 
           <span
+            role="status"
+            aria-label={`Project status: ${project.status}`}
             className={`rounded-full px-4 py-1 text-sm font-medium ${statusStyles[project.status]}`}
           >
             {project.status}
@@ -268,7 +275,15 @@ if (!project) {
 
           <div>
             <p className="text-sm text-zinc-500">Progress</p>
-            <div className="mt-2 h-2 w-full rounded-full bg-zinc-200">
+            <div
+              role="progressbar"
+              aria-valuenow={project.progress}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Project progress"
+              className="mt-2 h-2 w-full rounded-full bg-zinc-200"
+            >
+
               <div
                 className="h-full rounded-full bg-indigo-500"
                 style={{ width: `${project.progress}%` }}
@@ -300,7 +315,10 @@ if (!project) {
       <div>
         <h2 className="mb-4 text-2xl font-semibold">Tasks</h2>
 
-        <TaskFilters filters={filters} onChange={setFilters} />
+        <section aria-label="Task filters">
+          <TaskFilters filters={filters} onChange={setFilters} />
+        </section>
+
 
 
         {canEdit && <AddTaskForm onAdd={addTask} />}
@@ -309,8 +327,11 @@ if (!project) {
           <div className="mt-4 flex items-center gap-3 rounded-xl bg-indigo-50 p-4">
             <button
               onClick={bulkMarkDone}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-white"
+              aria-disabled={selected.length === 0}
+              disabled={selected.length === 0}
+              className="rounded-lg bg-indigo-600 px-4 py-2 text-white disabled:opacity-50"
             >
+
               Mark selected as Done
             </button>
             <span className="text-sm text-indigo-700">
@@ -319,25 +340,25 @@ if (!project) {
           </div>
         )}
 
-       <div className="mt-6">
-  {tasksLoading ? (
-    <TaskSkeleton />
-  ) : filteredTasks.length === 0 ? (
-    <div className="rounded-xl border border-dashed p-8 text-center text-zinc-500">
-      No tasks match your filters.
-    </div>
-  ) : (
-    <TaskList
-      tasks={filteredTasks}
-      selected={selected}
-      onToggle={toggleTask}
-      onEdit={editTask}
-      canEdit={canEdit}
-    />
-  )}
-</div>
+        <div className="mt-6">
+          {tasksLoading ? (
+            <TaskSkeleton />
+          ) : filteredTasks.length === 0 ? (
+            <div role="status" aria-live="polite" className="rounded-xl border border-dashed p-8 text-center text-zinc-500">
+              No tasks match your filters.
+            </div>
+          ) : (
+            <TaskList
+              tasks={filteredTasks}
+              selected={selected}
+              onToggle={toggleTask}
+              onEdit={editTask}
+              canEdit={canEdit}
+            />
+          )}
+        </div>
 
       </div>
-    </div>
+    </main>
   );
 }

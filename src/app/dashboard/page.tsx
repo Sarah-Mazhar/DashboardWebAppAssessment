@@ -39,6 +39,7 @@ type SortOrder = "asc" | "desc";
 export default function DashboardPage() {
     const queryClient = useQueryClient();
 
+
     /* ---------- State ---------- */
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
@@ -49,6 +50,9 @@ export default function DashboardPage() {
     /* ---------- Auth ---------- */
     const role = useSelector((state: RootState) => state.auth.role);
     const canEdit = canEditProjects(role);
+
+    const isAdmin = role === "admin";
+
 
     /* ---------- Query ---------- */
     const { data, isLoading } = useQuery<ProjectsResponse>({
@@ -160,6 +164,50 @@ export default function DashboardPage() {
             <DashboardSkeleton />
         </div>;
     }
+
+
+    function AdminProgressEditor({
+  projectId,
+  initialProgress,
+  isSaving,
+  onSave,
+}: {
+  projectId: string;
+  initialProgress: number;
+  isSaving: boolean;
+  onSave: (value: number) => void;
+}) {
+  const [value, setValue] = useState(initialProgress);
+
+  return (
+    <div>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={value}
+        disabled={isSaving}
+        className="w-full accent-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label={`Progress slider for project ${projectId}`}
+        onChange={(e) => setValue(Number(e.target.value))}   //  LIVE UPDATE
+        onMouseUp={() => onSave(value)}                      //  SAVE ON RELEASE
+        onKeyUp={(e) => {
+          if (e.key === "Enter") {
+            onSave(value);
+          }
+        }}
+      />
+
+      <p className="mt-1 text-[11px] text-zinc-500">
+        Drag to update project progress
+      </p>
+
+      <div className="mt-1 text-xs font-medium">
+        {value}%
+      </div>
+    </div>
+  );
+}
 
 
     return (
@@ -300,16 +348,34 @@ export default function DashboardPage() {
                                 <div>Start: {project.startDate}</div>
                                 <div>End: {project.endDate}</div>
                             </div>
+                          <div onClick={(e) => e.stopPropagation()}>
+  {isAdmin ? (
+    <AdminProgressEditor
+      projectId={project.id}
+      initialProgress={project.progress}
+      isSaving={mutation.isPending}
+      onSave={(value) =>
+        mutation.mutate({
+          id: project.id,
+          data: { progress: value },
+        })
+      }
+    />
+  ) : (
+    <>
+      <div className="h-2 w-full rounded-full bg-zinc-200">
+        <div
+          className="h-full rounded-full bg-indigo-500"
+          style={{ width: `${project.progress}%` }}
+        />
+      </div>
+      <div className="mt-1 text-xs">{project.progress}%</div>
+    </>
+  )}
+</div>
 
-                            <div>
-                                <div className="h-2 w-full rounded-full bg-zinc-200">
-                                    <div
-                                        className="h-full rounded-full bg-indigo-500"
-                                        style={{ width: `${project.progress}%` }}
-                                    />
-                                </div>
-                                <div className="mt-1 text-xs">{project.progress}%</div>
-                            </div>
+
+
 
                             <div className="font-bold md:text-right">
 
@@ -320,7 +386,7 @@ export default function DashboardPage() {
                 ))}
             </div>
 
-           
+
 
             {/* Pagination */}
             <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
@@ -341,23 +407,23 @@ export default function DashboardPage() {
             </div>
 
 
- {/* ===== Analytics ===== */}
+            {/* ===== Analytics ===== */}
 
-{canViewAnalytics(role) && (
-  <section
-    aria-labelledby="progress-chart-title"
-    className="mt-8 mb-8 rounded-2xl bg-white p-6 shadow"
-  >
-    <h2
-      id="progress-chart-title"
-      className="mb-4 text-xl font-semibold"
-    >
-      Project Progress Overview (Admin)
-    </h2>
+            {canViewAnalytics(role) && (
+                <section
+                    aria-labelledby="progress-chart-title"
+                    className="mt-8 mb-8 rounded-2xl bg-white p-6 shadow"
+                >
+                    <h2
+                        id="progress-chart-title"
+                        className="mb-4 text-xl font-semibold"
+                    >
+                        Project Progress Overview (Admin)
+                    </h2>
 
-    <ProjectProgressChart projects={sortedProjects} />
-  </section>
-)}
+                    <ProjectProgressChart projects={sortedProjects} />
+                </section>
+            )}
 
             {/* <AdminAnalytics /> */}
         </main>

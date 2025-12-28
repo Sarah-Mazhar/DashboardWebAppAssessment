@@ -32,6 +32,9 @@ export default function LoginPage() {
 
     const token = generateMockToken({ email, role });
 
+
+     console.log("Generated JWT:", token);
+     
     dispatch(
       loginSuccess({
         token,

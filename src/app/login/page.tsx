@@ -5,20 +5,32 @@ import { loginSuccess } from "@/store/authSlice";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { generateMockToken } from "@/utils/jwt";
-import { UserRole } from "@/types/auth";
+import { MOCK_USERS } from "@/utils/authConfig";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const handleLogin = (role: UserRole) => {
-    const token = generateMockToken({
-      role,
-      email: email || "test@example.com",
-    });
+  const handleLogin = () => {
+    setError("");
+
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
+
+    const role = MOCK_USERS[email];
+
+    if (!role) {
+      setError("Invalid credentials");
+      return;
+    }
+
+    const token = generateMockToken({ email, role });
 
     dispatch(
       loginSuccess({
@@ -42,37 +54,36 @@ export default function LoginPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          aria-label="Email"
         />
 
         <input
-          className="mb-4 w-full rounded border p-2"
+          className="mb-3 w-full rounded border p-2"
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          aria-label="Password"
         />
 
-        <div className="space-y-2">
-          <button
-            onClick={() => handleLogin("admin")}
-            className="w-full rounded bg-black py-2 text-white"
-          >
-            Login as Admin
-          </button>
+        {error && (
+          <p role="alert" className="mb-3 text-sm text-red-600">
+            {error}
+          </p>
+        )}
 
-          <button
-            onClick={() => handleLogin("projectManager")}
-            className="w-full rounded bg-zinc-800 py-2 text-white"
-          >
-            Login as Project Manager
-          </button>
+        <button
+          onClick={handleLogin}
+          className="w-full rounded bg-indigo-600 py-2 text-white hover:bg-indigo-700"
+        >
+          Login
+        </button>
 
-          <button
-            onClick={() => handleLogin("developer")}
-            className="w-full rounded bg-zinc-700 py-2 text-white"
-          >
-            Login as Developer
-          </button>
+        <div className="mt-4 text-xs text-zinc-500">
+          <p>Admin: admin@demo.com</p>
+          <p>PM: pm@demo.com</p>
+          <p>Dev: dev@demo.com</p>
+          <p>Password: anything</p>
         </div>
       </div>
     </div>

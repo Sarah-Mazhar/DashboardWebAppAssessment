@@ -1,82 +1,84 @@
 import Link from "next/link";
-
-/*
-Home page used as a navigation hub
-Allows quick access to all main features for testing and review
-*/
+import { CheckCircle, Shield, BarChart3, Users } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-6">
-      <div className="w-full max-w-5xl">
-        {/* Header */}
-        <header className="mb-12 text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900">
-            Project Dashboard
-          </h1>
-        <p className="mt-4 text-base sm:text-lg text-slate-600">
+    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-100">
+      {/* HERO */}
+      <section className="mx-auto max-w-6xl px-6 pt-24 pb-20 text-center">
+        <h1 className="text-5xl font-bold tracking-tight text-slate-900">
+          Project Management Dashboard
+        </h1>
 
-            React & Next.js assessment showcasing authentication, dashboards,
-            real-time updates, and modern UI patterns.
-          </p>
-        </header>
+        <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600">
+          A modern project & task management platform demonstrating
+          authentication, role-based access control, real-time updates,
+          dashboards, and analytics.
+        </p>
 
-        {/* Navigation Cards */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <NavCard
-            title="Login"
-            description="Simulated authentication with role-based access."
+        <div className="mt-10 flex justify-center">
+          <Link
             href="/login"
+            className="rounded-xl bg-indigo-600 px-8 py-4 text-lg font-semibold text-white shadow hover:bg-indigo-700 transition"
+          >
+            Get Started → Login
+          </Link>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="mx-auto max-w-6xl px-6 pb-24">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <Feature
+            icon={<Shield className="h-6 w-6 text-indigo-600" />}
+            title="JWT Authentication"
+            text="Simulated JWT login with Admin, Project Manager, and Developer roles."
           />
 
-          <NavCard
-            title="Dashboard"
-            description="View projects with inline editing, filtering, and pagination."
-            href="/dashboard"
+          <Feature
+            icon={<Users className="h-6 w-6 text-indigo-600" />}
+            title="Role-Based Access"
+            text="Different permissions for editing projects, tasks, and analytics."
           />
 
-          <NavCard
-            title="Project Details"
-            description="Task management with real-time updates and bulk actions."
-            href="/projects/1"
+          <Feature
+            icon={<CheckCircle className="h-6 w-6 text-indigo-600" />}
+            title="Task Management"
+            text="Create, update, filter, and bulk-edit tasks with real-time updates."
+          />
+
+          <Feature
+            icon={<BarChart3 className="h-6 w-6 text-indigo-600" />}
+            title="Analytics & Charts"
+            text="Admin-only project progress analytics using Recharts."
           />
         </div>
+      </section>
 
-        {/* Footer */}
-        <footer className="mt-16 text-center text-sm text-slate-500">
-          Built with Next.js, TypeScript, React Query, Redux Toolkit, and Tailwind
-          CSS.
-        </footer>
-      </div>
-    </div>
+      {/* FOOTER */}
+      <footer className="border-t bg-white py-6 text-center text-sm text-slate-500">
+        Built with Next.js, TypeScript, Redux Toolkit, React Query & Tailwind CSS
+      </footer>
+    </main>
   );
 }
 
-/*
-Reusable navigation card component
-Keeps UI consistent and readable
-*/
-function NavCard({
+function Feature({
+  icon,
   title,
-  description,
-  href,
+  text,
 }: {
+  icon: React.ReactNode;
   title: string;
-  description: string;
-  href: string;
+  text: string;
 }) {
   return (
-    <Link
-      href={href}
-      className="group rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
-    >
-      <h2 className="text-xl font-semibold text-slate-900 group-hover:text-slate-700">
-        {title}
-      </h2>
-      <p className="mt-2 text-slate-600">{description}</p>
-      <span className="mt-4 inline-block text-sm font-medium text-slate-500 group-hover:text-slate-700">
-        Open →
-      </span>
-    </Link>
+    <div className="rounded-2xl bg-white p-6 shadow-sm">
+      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50">
+        {icon}
+      </div>
+      <h3 className="font-semibold text-slate-900">{title}</h3>
+      <p className="mt-2 text-sm text-slate-600">{text}</p>
+    </div>
   );
 }

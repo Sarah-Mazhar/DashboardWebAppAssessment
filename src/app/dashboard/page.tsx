@@ -233,25 +233,7 @@ export default function DashboardPage() {
             </div>
 
 
-{/* ===== Analytics ===== */}
 
-{canViewAnalytics(role) && (
-  <ProjectProgressChart projects={sortedProjects} />
-)}
-
-<section
-  aria-labelledby="progress-chart-title"
-  className="mb-8 rounded-2xl bg-white p-6 shadow"
->
-  <h2
-    id="progress-chart-title"
-    className="mb-4 text-xl font-semibold"
-  >
-    Project Progress Overview
-  </h2>
-
-  <ProjectProgressChart projects={sortedProjects} />
-</section>
 
             {/* ===== Project Cards ===== */}
             <div className="space-y-4">
@@ -338,6 +320,8 @@ export default function DashboardPage() {
                 ))}
             </div>
 
+           
+
             {/* Pagination */}
             <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
 
@@ -356,7 +340,26 @@ export default function DashboardPage() {
                 </button>
             </div>
 
-            <AdminAnalytics />
+
+ {/* ===== Analytics ===== */}
+
+{canViewAnalytics(role) && (
+  <section
+    aria-labelledby="progress-chart-title"
+    className="mt-8 mb-8 rounded-2xl bg-white p-6 shadow"
+  >
+    <h2
+      id="progress-chart-title"
+      className="mb-4 text-xl font-semibold"
+    >
+      Project Progress Overview (Admin)
+    </h2>
+
+    <ProjectProgressChart projects={sortedProjects} />
+  </section>
+)}
+
+            {/* <AdminAnalytics /> */}
         </main>
     );
 }

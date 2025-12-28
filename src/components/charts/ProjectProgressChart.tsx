@@ -21,7 +21,7 @@ export default function ProjectProgressChart({
   }));
 
   return (
-    <div className="h-64 w-full">
+    <div className="h-72 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           <XAxis dataKey="name" hide />
